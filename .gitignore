@@ -1,0 +1,21 @@
+# The real config never gets committed — only config.example.yaml is tracked.
+config.yaml
+
+# Rendered runtime configs (generated from config.yaml by scripts/render_nanobot_config.py)
+nanobot/nanobot.config.json
+nanobot/data/
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+.venv-render/
+venv/
+
+# Docker / runtime
+*.log
+logs/
