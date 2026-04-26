@@ -62,10 +62,14 @@ providers:
     api_key: "{{GOOGLE_API_KEY}}"
 
 # ---------------------------------------------------------------------------
-# 4. Nanobot  ·  the audit agent runtime
+# 4. Audit receiver + Nanobot runtime
 # ---------------------------------------------------------------------------
 nanobot:
-  # Internal listen address (inside docker network)
+  # Public receiver port on this server. Point the frontend
+  # NANOBOT_PUBLIC_URL at this service, not directly at nanobot.
+  receiver_port: 8080
+
+  # Internal nanobot listen address (inside docker network)
   host: "0.0.0.0"
   port: 8080
 

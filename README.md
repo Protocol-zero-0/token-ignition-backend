@@ -6,8 +6,8 @@
 > and alerts when something looks off.
 
 This repo is the **backend only**. It does not serve HTML. The frontend
-lives in `justDance-everybody/token-ignition` and the public ledger lives
-in `billion-token-one-task/token-ignition-ledger`. The contract between
+lives in `Protocol-zero-0/token-ignition` and the public ledger lives
+in `Protocol-zero-0/token-ignition-ledger`. The contract between
 them is the shape of `submissions/<hash>.json` on the ledger.
 
 ---
@@ -29,7 +29,7 @@ Generated artifacts (gitignored, rebuilt every setup):
 On the server where the audit agent will run:
 
 ```bash
-git clone https://github.com/justDance-everybody/token-ignition-backend.git
+git clone https://github.com/Protocol-zero-0/token-ignition-backend.git
 cd token-ignition-backend
 
 cp config.example.yaml config.yaml
@@ -66,7 +66,12 @@ docker compose logs -f watchdog    # just the observer
 ├── config.example.yaml        ← the one file you edit
 ├── setup.sh                   ← one-shot boot
 ├── stop.sh
-├── docker-compose.yml         ← three services: nanobot + mcp-tools + watchdog
+├── docker-compose.yml         ← four services: receiver + nanobot + mcp-tools + watchdog
+│
+├── audit-receiver/            ← public trigger API, pending sweep, nanobot caller
+│   ├── app.py                 ← POST /v1/audit/trigger
+│   ├── Dockerfile
+│   └── requirements.txt
 │
 ├── nanobot/                   ← nanobot audit agent runtime
 │   ├── Dockerfile
@@ -121,10 +126,13 @@ you expose publicly (see `config.yaml → nanobot.public_url`).
                                 │     ┌──────────────────────────────────┐
                                 │     │  your server  (this repo)        │
                                 │     │  ┌─────────┐ ┌─────────┐ ┌──────┐│
-                                │     │  │ nanobot │─│ mcp-    │ │watch-││
-                                │     │  │ gateway │ │ tools   │ │ dog  ││
-                                │     │  └────┬────┘ └─────────┘ └──┬───┘│
-                                │     └───────┼────────────────────┼────┘
+                                │     │  │receiver │→│ nanobot │─│ mcp- ││
+                                │     │  │+ sweeper│ │gateway  │ │tools ││
+                                │     │  └─────────┘ └────┬────┘ └──┬───┘│
+                                │     │              ┌────┴────┐    │    │
+                                │     │              │watchdog │    │    │
+                                │     │              └────┬────┘    │    │
+                                │     └───────────────────┼────────┼────┘
                                 │             │                    │
                                 │  fetch_url, commit_verdict       │  (read-only)
                                 ▼             ▼                    │
@@ -139,6 +147,9 @@ you expose publicly (see `config.yaml → nanobot.public_url`).
 
 ### Invariants
 
+- **The public endpoint is only the receiver.** Nanobot stays internal on
+  the docker network; the frontend calls `POST /v1/audit/trigger` on the
+  receiver with `Authorization: Bearer <NANOBOT_TRIGGER_SECRET>`.
 - **The agent is stateless.** Nanobot's memory / dream / channels are all
   disabled via the rendered config. Every audit is reproducible from
   (submission + prompt version + models used + self-check).
@@ -148,6 +159,9 @@ you expose publicly (see `config.yaml → nanobot.public_url`).
   judged it. Prompts change → bump the version → audit trail stays sane.
 - **The ledger is the source of truth.** No internal database. Anyone can
   clone the ledger repo and replay every decision.
+- **Triggers are best-effort, sweeps are the safety net.** If the Vercel
+  trigger times out or the backend is warming up, the receiver periodically
+  scans pending rows in `submissions/index.json` and retries gate.1.
 - **The watchdog is read-only.** It cannot influence audits. A watchdog
   crash does not affect the pipeline.
 
@@ -235,6 +249,10 @@ records `models_used` on every record.
 - **Audit latency.** gate.1 typically ~15s; gate.3 typically 1–3 min
   (three independent agent loops). The frontend doesn't block — it polls
   the ledger.
+- **Frontend wiring.** Set the frontend env var `NANOBOT_PUBLIC_URL` to the
+  receiver's public origin, for example `https://ti-audit.your-domain.com`.
+  Set `NANOBOT_TRIGGER_SECRET` to the same value in both frontend and
+  backend.
 - **Abuse / rate limits.** Not wired in v0.2. Simple next-step:
   Cloudflare in front of the Vercel function, or a per-contact-handle
   throttle inside the submit function.

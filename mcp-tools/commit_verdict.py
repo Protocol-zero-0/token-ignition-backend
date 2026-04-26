@@ -48,6 +48,82 @@ class CommitResult(BaseModel):
     error: str | None = None
 
 
+def _status_for(verdict: str, gate: str) -> str:
+    if verdict == "rejected":
+        return "rejected"
+    if verdict == "ignited" or gate == "gate.3":
+        return "ignited"
+    if gate == "gate.2":
+        return "verified"
+    return "admitted"
+
+
+def _summary_row(record: dict[str, Any]) -> dict[str, Any]:
+    submission = record.get("submission") or {}
+    return {
+        "submission_id": record.get("submission_id"),
+        "hash": record.get("hash") or f"0x{record.get('submission_id')}",
+        "status": record.get("status") or record.get("verdict"),
+        "verdict": record.get("verdict"),
+        "gate": record.get("gate"),
+        "ts": record.get("ts"),
+        "updated_at": record.get("updated_at") or record.get("ts"),
+        "axes": submission.get("axes", []),
+        "repo": submission.get("repo"),
+        "endpoint": submission.get("endpoint"),
+        "baselineRepo": submission.get("baselineRepo"),
+        "baselineEndpoint": submission.get("baselineEndpoint"),
+        "task_excerpt": str(submission.get("task", ""))[:180],
+    }
+
+
+async def _update_index(
+    client: httpx.AsyncClient,
+    repo: str,
+    branch: str,
+    headers: dict[str, str],
+    record: dict[str, Any],
+) -> None:
+    path = "submissions/index.json"
+    api_base = f"https://api.github.com/repos/{repo}/contents/{path}"
+    get_resp = await client.get(api_base, headers=headers, params={"ref": branch})
+
+    sha: str | None = None
+    rows: list[dict[str, Any]] = []
+    if get_resp.status_code == 200:
+        meta = get_resp.json()
+        sha = meta.get("sha")
+        try:
+            rows = json.loads(base64.b64decode(meta.get("content", "")).decode("utf-8"))
+            if not isinstance(rows, list):
+                rows = []
+        except (ValueError, UnicodeDecodeError):
+            rows = []
+    elif get_resp.status_code not in (404, 422):
+        raise RuntimeError(f"github GET {path} failed: {get_resp.status_code} {get_resp.text[:200]}")
+
+    row = _summary_row(record)
+    rows = [
+        row,
+        *[r for r in rows if isinstance(r, dict) and r.get("submission_id") != record.get("submission_id")],
+    ]
+    rows.sort(key=lambda r: int(r.get("updated_at") or r.get("ts") or 0), reverse=True)
+
+    payload: dict[str, Any] = {
+        "message": f"index · {record.get('submission_id')}",
+        "content": base64.b64encode(
+            json.dumps(rows, ensure_ascii=False, indent=2).encode("utf-8")
+        ).decode("ascii"),
+        "branch": branch,
+    }
+    if sha:
+        payload["sha"] = sha
+
+    put_resp = await client.put(api_base, headers=headers, json=payload)
+    if put_resp.status_code not in (200, 201):
+        raise RuntimeError(f"github PUT {path} failed: {put_resp.status_code} {put_resp.text[:200]}")
+
+
 async def commit_verdict(
     submission_id: str,
     verdict: Literal["advanced", "ignited", "rejected"],
@@ -155,6 +231,7 @@ async def commit_verdict(
         now = int(time.time())
         history = list(existing.get("history", []))
         history.append({
+            "status": _status_for(verdict, gate),
             "verdict": verdict,
             "gate": gate,
             "prompt_version": prompt_version,
@@ -162,8 +239,12 @@ async def commit_verdict(
             "ts": now,
         })
 
+        status = _status_for(verdict, gate)
         record = {
+            **existing,
             "submission_id": submission_id,
+            "hash": existing.get("hash") or f"0x{submission_id}",
+            "status": status,
             "verdict": verdict,
             "gate": gate,
             "prompt_version": prompt_version,
@@ -171,9 +252,10 @@ async def commit_verdict(
             "reasoning": reasoning,
             "self_check": sc,
             "evidence": evidence or {},
-            "ts": now,
+            "updated_at": now,
             "history": history,
         }
+        record.setdefault("ts", now)
 
         encoded = base64.b64encode(
             json.dumps(record, ensure_ascii=False, indent=2).encode("utf-8")
@@ -199,6 +281,12 @@ async def commit_verdict(
             )
 
         data = put_resp.json()
+        index_error: str | None = None
+        try:
+            await _update_index(client, repo, branch, headers, record)
+        except Exception as e:
+            index_error = f"verdict committed but index update failed: {type(e).__name__}: {e}"
+
         return CommitResult(
             ok=True,
             submission_id=submission_id,
@@ -206,6 +294,7 @@ async def commit_verdict(
             commit_sha=(data.get("commit") or {}).get("sha"),
             path=path,
             html_url=(data.get("content") or {}).get("html_url"),
+            error=index_error,
         )
 
 

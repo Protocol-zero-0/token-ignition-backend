@@ -2,9 +2,11 @@ version: "3.9"
 
 # Token-Ignition backend  ·  v0.2
 #
-# Two services on a single private network:
+# Four services on a single private network:
+#   audit-receiver — public HTTP trigger endpoint called by the frontend
 #   mcp-tools  — our two audit tools exposed as an MCP server
-#   nanobot    — the audit agent runtime (reachable from the Vercel API layer)
+#   nanobot    — the audit agent runtime (internal only)
+#   watchdog   — read-only ledger observer
 #
 # Everything is driven by ../config.yaml via ./scripts/render_nanobot_config.py
 
@@ -13,6 +15,30 @@ networks:
     driver: bridge
 
 services:
+  audit-receiver:
+    build:
+      context: ./audit-receiver
+    container_name: ti-audit-receiver
+    depends_on:
+      - nanobot
+      - mcp-tools
+    ports:
+      # Public trigger endpoint used by the Vercel API layer.
+      - "${AUDIT_RECEIVER_PORT:-8080}:8080"
+    environment:
+      - LEDGER_REPO=${LEDGER_REPO}
+      - LEDGER_BRANCH=${LEDGER_BRANCH:-main}
+      - LEDGER_GITHUB_TOKEN=${LEDGER_GITHUB_TOKEN}
+      - NANOBOT_TRIGGER_SECRET=${NANOBOT_TRIGGER_SECRET}
+      - NANOBOT_CHAT_URL=${NANOBOT_CHAT_URL:-http://nanobot:8080/v1/chat/completions}
+      - NANOBOT_GATE1_MODEL=${NANOBOT_GATE1_MODEL:-ti-gate-1}
+      - AUDIT_SWEEP_ON_STARTUP=${AUDIT_SWEEP_ON_STARTUP:-true}
+      - AUDIT_SWEEP_INTERVAL_SEC=${AUDIT_SWEEP_INTERVAL_SEC:-300}
+      - AUDIT_SWEEP_LIMIT=${AUDIT_SWEEP_LIMIT:-10}
+    networks:
+      - ti-net
+    restart: unless-stopped
+
   mcp-tools:
     build:
       context: ./mcp-tools
@@ -32,10 +58,8 @@ services:
     container_name: ti-nanobot
     depends_on:
       - mcp-tools
-    ports:
-      # Host port : container port
-      # The host port should match config.yaml -> nanobot.port
-      - "${NANOBOT_PORT:-8080}:8080"
+    expose:
+      - "8080"
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
