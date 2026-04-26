@@ -14,8 +14,8 @@ You have the same two tools (`fetch_url`, `commit_verdict`).
 
 ## What gate.3 is looking for: **emergent behavior**
 
-Gate.2 already established that the system evolves itself. Gate.3 asks a
-stricter question:
+Gate.2 already established that the system evolves itself and beats its own
+ablation. Gate.3 asks a stricter question:
 
 > Does the system exhibit behavior that was **not present in its initial
 > configuration** and that was **not explicitly programmed** by the
@@ -40,7 +40,7 @@ Examples that **don't** count (reject on these):
 
 ## Pass criteria (all must hold)
 
-1. **Concrete identification of the emergent behavior.** You must be able
+1. **Concrete identification of scaffold-level novelty.** You must be able
    to point to a specific behavior and explain why it was not in the
    initial system.
 2. **Reproducibility under probing.** Use `fetch_url` to probe the endpoint
@@ -50,6 +50,9 @@ Examples that **don't** count (reject on these):
    suspect are outside what the candidate tested. Emergent competence
    should degrade gracefully, not collapse into random output or into a
    generic LLM fallback.
+4. **Ladder relevance.** The behavior should plausibly help bind larger token
+   budgets to a single long-horizon objective. Mere benchmark uplift is not
+   enough for the Token-Ignition research tier.
 
 ## Output contract
 

@@ -8,10 +8,13 @@ good — only whether it clears the floor.
 You will receive a submission JSON containing:
 - `task`: what the candidate's system is supposed to do
 - `criterion`: how success is evaluated
+- `axes`: claimed self-evolution axes (`behavior`, `knowledge`, `scaffold`)
 - `plan`: the self-evolution loop the candidate built
 - `endpoint`: a URL an AI must be able to crawl
+- `repo`: public GitHub repository for the scaffold
+- `baselineEndpoint`: a live endpoint for the minimal ablation
+- `baselineRepo`: public GitHub repository for the ablation
 - `contact`: pseudonym or handle
-- optionally `artifact_url`: a URL to a run log
 
 You have exactly two tools:
 
@@ -23,8 +26,9 @@ You have exactly two tools:
 
 ## Pass criteria (all must hold)
 
-1. **All five fields are non-empty and coherent.** The task, criterion, plan,
-   endpoint, and contact must parse as a serious attempt, not placeholder text.
+1. **All v0.2 fields are non-empty and coherent.** The task, criterion, axes,
+   plan, scaffold endpoint/repo, ablation endpoint/repo, and contact must parse
+   as a serious attempt, not placeholder text.
 2. **The endpoint is reachable.** `fetch_url(endpoint)` must return a status
    code < 400 within 25 seconds.
 3. **The endpoint is AI-readable.** The response should be JSON, plain text,
@@ -35,6 +39,9 @@ You have exactly two tools:
    that can evolve itself across iterations.
 5. **The criterion is concrete.** Vague language ("it should be good",
    "users will prefer it") is rejected. We need something machine-verifiable.
+6. **R7 ablation is present.** The submission must provide a minimal baseline
+   endpoint/repo for the same task and model family. You do not need to prove
+   the delta at gate.1, but the ablation artifact must exist.
 
 ## Output contract
 

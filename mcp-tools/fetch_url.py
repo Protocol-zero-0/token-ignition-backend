@@ -10,8 +10,11 @@ Returns a structured result the LLM can reason over.
 
 from __future__ import annotations
 
+import ipaddress
+import socket
 import time
 from typing import Any, Literal
+from urllib.parse import urlparse
 
 import httpx
 from pydantic import BaseModel, Field
@@ -20,6 +23,39 @@ from pydantic import BaseModel, Field
 MAX_BYTES = 512 * 1024     # 512KB is enough for a benchmark JSON / log slice
 TIMEOUT_SEC = 25.0
 MAX_REDIRECTS = 3
+
+
+def _public_host_error(url: str) -> str | None:
+    parsed = urlparse(url)
+    host = parsed.hostname
+    if not host:
+      return "url must include a hostname"
+
+    lowered = host.lower().rstrip(".")
+    if lowered in {"localhost", "metadata.google.internal"} or lowered.endswith(".local"):
+        return "private hostnames are not fetchable"
+
+    try:
+        ip = ipaddress.ip_address(lowered)
+        if not ip.is_global:
+            return "private, loopback, link-local, or reserved IPs are not fetchable"
+        return None
+    except ValueError:
+        pass
+
+    try:
+        infos = socket.getaddrinfo(lowered, parsed.port or 443, type=socket.SOCK_STREAM)
+    except socket.gaierror as e:
+        return f"dns resolution failed: {e}"
+
+    for info in infos:
+        addr = info[4][0]
+        try:
+            if not ipaddress.ip_address(addr).is_global:
+                return "hostname resolves to a private, loopback, link-local, or reserved IP"
+        except ValueError:
+            return "hostname resolves to an invalid IP"
+    return None
 
 
 class FetchResult(BaseModel):
@@ -59,6 +95,15 @@ async def fetch_url(
             elapsed_ms=int((time.monotonic() - start) * 1000),
             error="url must start with http:// or https://",
         )
+    host_error = _public_host_error(url)
+    if host_error:
+        return FetchResult(
+            ok=False,
+            url=url,
+            final_url=url,
+            elapsed_ms=int((time.monotonic() - start) * 1000),
+            error=host_error,
+        )
 
     headers = {
         "User-Agent": "token-ignition-auditor/0.2 (+https://token-ignition.vercel.app)",
@@ -71,12 +116,41 @@ async def fetch_url(
         post_kwargs["content"] = (body or "").encode("utf-8")
 
     try:
-        async with httpx.AsyncClient(
-            follow_redirects=True,
-            max_redirects=MAX_REDIRECTS,
-            timeout=TIMEOUT_SEC,
-        ) as client:
-            resp = await client.request(method, url, headers=headers, **post_kwargs)
+        async with httpx.AsyncClient(timeout=TIMEOUT_SEC) as client:
+            current_url = url
+            resp: httpx.Response | None = None
+            for redirects in range(MAX_REDIRECTS + 1):
+                resp = await client.request(method, current_url, headers=headers, **post_kwargs)
+                if resp.status_code not in {301, 302, 303, 307, 308}:
+                    break
+                location = resp.headers.get("location")
+                if not location:
+                    break
+                next_url = str(resp.url.join(location))
+                host_error = _public_host_error(next_url)
+                if host_error:
+                    return FetchResult(
+                        ok=False,
+                        url=url,
+                        final_url=next_url,
+                        status_code=resp.status_code,
+                        elapsed_ms=int((time.monotonic() - start) * 1000),
+                        error=f"redirect blocked: {host_error}",
+                    )
+                if redirects >= MAX_REDIRECTS:
+                    return FetchResult(
+                        ok=False,
+                        url=url,
+                        final_url=next_url,
+                        status_code=resp.status_code,
+                        elapsed_ms=int((time.monotonic() - start) * 1000),
+                        error=f"too many redirects (>{MAX_REDIRECTS})",
+                    )
+                current_url = next_url
+                if resp.status_code == 303:
+                    method = "GET"
+                    post_kwargs = {}
+            assert resp is not None
 
         raw = resp.content or b""
         truncated = len(raw) > MAX_BYTES

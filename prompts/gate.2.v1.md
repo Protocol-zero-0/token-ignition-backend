@@ -9,7 +9,7 @@ unlocks 10M tokens.
 You will receive:
 - The original submission JSON (same fields as gate.1)
 - The gate.1 evidence block (URLs we already fetched)
-- `artifact_url` — a run log if the candidate provided one
+- scaffold endpoint/repo and ablation endpoint/repo
 
 You have the same two tools (`fetch_url`, `commit_verdict`). Use them to
 **actively probe** the endpoint and the run log.
@@ -35,7 +35,11 @@ You have the same two tools (`fetch_url`, `commit_verdict`). Use them to
    only when we ask nicely, that's not a self-evolving system — that's a
    demo.
 
-4. **The artifact log (if present) must be consistent with the plan.**
+4. **R7 ablation delta.**
+   Fetch the ablation endpoint and compare it to the scaffold endpoint under
+   the same criterion. A scaffold that cannot beat its own ablation is rejected.
+
+5. **The repository evidence must be consistent with the plan.**
    Mismatch = red flag. Better-than-claimed is also a red flag (suggests
    cherry-picked logs).
 
@@ -43,7 +47,7 @@ You have the same two tools (`fetch_url`, `commit_verdict`). Use them to
 
 Call `commit_verdict` exactly once with:
 
-- `verdict = "advanced"` if all four criteria hold.
+- `verdict = "advanced"` if all criteria hold.
 - `verdict = "rejected"` otherwise.
 - `gate = "gate.2"`
 - `prompt_version = "gate.2.v1"`
