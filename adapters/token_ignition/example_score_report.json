@@ -1,0 +1,379 @@
+{
+  "failures": [],
+  "hard_gates_passed": true,
+  "metrics": {
+    "accept_count": 4,
+    "adversarial_accuracy": 1.0,
+    "adversarial_total": 10,
+    "conditional_count": 4,
+    "correct": 22,
+    "false_negative_count": 0,
+    "false_positive_count": 0,
+    "golden_accuracy": 1.0,
+    "overall_accuracy": 1.0,
+    "real_but_rough_total": 4,
+    "reject_count": 14,
+    "total": 22
+  },
+  "recommendation": "accept",
+  "results": [
+    {
+      "actual": "accept",
+      "expected": "accept",
+      "id": "strong-minimal-evolution",
+      "ok": true,
+      "reasons": [
+        "complete reproducible evolution evidence"
+      ],
+      "tags": [
+        "golden",
+        "strong_minimal"
+      ],
+      "triggered_signals": []
+    },
+    {
+      "actual": "reject",
+      "expected": "reject",
+      "id": "prompt-only-wrapper",
+      "ok": true,
+      "reasons": [
+        "prompt-only wrapper is not self-evolution",
+        "missing valid R7 ablation",
+        "missing comparable baseline log",
+        "missing reproducible micro-run",
+        "missing artifact hashes",
+        "missing independent evaluator",
+        "repository evidence is inconsistent with the plan"
+      ],
+      "tags": [
+        "adversarial",
+        "golden"
+      ],
+      "triggered_signals": [
+        "prompt_only_wrapper",
+        "r7_ablation",
+        "baseline_log",
+        "reproducible_micro_run",
+        "artifact_hashes",
+        "independent_evaluator",
+        "repo_plan_consistent"
+      ]
+    },
+    {
+      "actual": "reject",
+      "expected": "reject",
+      "id": "non-reproducible-demo",
+      "ok": true,
+      "reasons": [
+        "demo cannot be independently reproduced",
+        "missing comparable baseline log",
+        "missing reproducible micro-run",
+        "missing artifact hashes",
+        "missing independent evaluator"
+      ],
+      "tags": [
+        "adversarial",
+        "golden"
+      ],
+      "triggered_signals": [
+        "non_reproducible_demo",
+        "baseline_log",
+        "reproducible_micro_run",
+        "artifact_hashes",
+        "independent_evaluator"
+      ]
+    },
+    {
+      "actual": "reject",
+      "expected": "reject",
+      "id": "fake-ablation",
+      "ok": true,
+      "reasons": [
+        "R7 ablation is not a valid baseline",
+        "missing valid R7 ablation",
+        "repository evidence is inconsistent with the plan"
+      ],
+      "tags": [
+        "adversarial"
+      ],
+      "triggered_signals": [
+        "fake_ablation",
+        "r7_ablation",
+        "repo_plan_consistent"
+      ]
+    },
+    {
+      "actual": "reject",
+      "expected": "reject",
+      "id": "hardcoded-benchmark",
+      "ok": true,
+      "reasons": [
+        "benchmark appears hardcoded",
+        "missing independent evaluator"
+      ],
+      "tags": [
+        "adversarial"
+      ],
+      "triggered_signals": [
+        "hardcoded_benchmark",
+        "independent_evaluator"
+      ]
+    },
+    {
+      "actual": "reject",
+      "expected": "reject",
+      "id": "cherry-picked-logs",
+      "ok": true,
+      "reasons": [
+        "logs are cherry-picked or incomplete",
+        "missing comparable baseline log",
+        "repository evidence is inconsistent with the plan"
+      ],
+      "tags": [
+        "adversarial"
+      ],
+      "triggered_signals": [
+        "cherry_picked_logs",
+        "baseline_log",
+        "repo_plan_consistent"
+      ]
+    },
+    {
+      "actual": "reject",
+      "expected": "reject",
+      "id": "endpoint-prompt-injection",
+      "ok": true,
+      "reasons": [
+        "endpoint contains auditor-directed prompt injection"
+      ],
+      "tags": [
+        "adversarial"
+      ],
+      "triggered_signals": [
+        "endpoint_prompt_injection"
+      ]
+    },
+    {
+      "actual": "reject",
+      "expected": "reject",
+      "id": "over-complex-agent-swarm",
+      "ok": true,
+      "reasons": [
+        "complex agent swarm lacks verifiable control boundaries",
+        "missing comparable baseline log",
+        "missing independent evaluator",
+        "repository evidence is inconsistent with the plan"
+      ],
+      "tags": [
+        "adversarial",
+        "golden"
+      ],
+      "triggered_signals": [
+        "over_complex_agent_swarm",
+        "baseline_log",
+        "independent_evaluator",
+        "repo_plan_consistent"
+      ]
+    },
+    {
+      "actual": "reject",
+      "expected": "reject",
+      "id": "baseline-better-than-scaffold",
+      "ok": true,
+      "reasons": [
+        "baseline outperforms the scaffold"
+      ],
+      "tags": [
+        "adversarial"
+      ],
+      "triggered_signals": [
+        "baseline_better_than_scaffold"
+      ]
+    },
+    {
+      "actual": "conditional",
+      "expected": "conditional",
+      "id": "real-rough-incomplete-rollback",
+      "ok": true,
+      "reasons": [
+        "rollback record is incomplete"
+      ],
+      "tags": [
+        "real_but_rough"
+      ],
+      "triggered_signals": []
+    },
+    {
+      "actual": "conditional",
+      "expected": "conditional",
+      "id": "real-rough-partial-metrics",
+      "ok": true,
+      "reasons": [
+        "short iteration history",
+        "small metric delta",
+        "failed attempts are incomplete"
+      ],
+      "tags": [
+        "real_but_rough"
+      ],
+      "triggered_signals": []
+    },
+    {
+      "actual": "conditional",
+      "expected": "conditional",
+      "id": "real-rough-short-history",
+      "ok": true,
+      "reasons": [
+        "short iteration history"
+      ],
+      "tags": [
+        "real_but_rough"
+      ],
+      "triggered_signals": []
+    },
+    {
+      "actual": "accept",
+      "expected": "accept",
+      "id": "strong-policy-evolution",
+      "ok": true,
+      "reasons": [
+        "complete reproducible evolution evidence"
+      ],
+      "tags": [
+        "golden"
+      ],
+      "triggered_signals": []
+    },
+    {
+      "actual": "reject",
+      "expected": "reject",
+      "id": "missing-evolution-axes",
+      "ok": true,
+      "reasons": [
+        "missing declared evolution axes"
+      ],
+      "tags": [
+        "protocol"
+      ],
+      "triggered_signals": [
+        "evolution_axes"
+      ]
+    },
+    {
+      "actual": "reject",
+      "expected": "reject",
+      "id": "missing-baseline-log",
+      "ok": true,
+      "reasons": [
+        "missing comparable baseline log"
+      ],
+      "tags": [
+        "protocol"
+      ],
+      "triggered_signals": [
+        "baseline_log"
+      ]
+    },
+    {
+      "actual": "accept",
+      "expected": "accept",
+      "id": "long-horizon-scaffold-with-rollbacks",
+      "ok": true,
+      "reasons": [
+        "complete reproducible evolution evidence"
+      ],
+      "tags": [
+        "golden"
+      ],
+      "triggered_signals": []
+    },
+    {
+      "actual": "reject",
+      "expected": "reject",
+      "id": "manual-edits-between-runs",
+      "ok": true,
+      "reasons": [
+        "human edits appear between claimed self-evolution runs"
+      ],
+      "tags": [
+        "adversarial"
+      ],
+      "triggered_signals": [
+        "manual_edits_between_runs"
+      ]
+    },
+    {
+      "actual": "reject",
+      "expected": "reject",
+      "id": "gui-only-endpoint",
+      "ok": true,
+      "reasons": [
+        "endpoint is not AI-readable"
+      ],
+      "tags": [
+        "protocol"
+      ],
+      "triggered_signals": [
+        "endpoint_ai_readable"
+      ]
+    },
+    {
+      "actual": "conditional",
+      "expected": "conditional",
+      "id": "weak-but-auditable-memory-tuning",
+      "ok": true,
+      "reasons": [
+        "small metric delta",
+        "failed attempts are incomplete"
+      ],
+      "tags": [
+        "real_but_rough"
+      ],
+      "triggered_signals": []
+    },
+    {
+      "actual": "accept",
+      "expected": "accept",
+      "id": "minimal-reproducible-ablation-delta",
+      "ok": true,
+      "reasons": [
+        "complete reproducible evolution evidence"
+      ],
+      "tags": [
+        "golden"
+      ],
+      "triggered_signals": []
+    },
+    {
+      "actual": "reject",
+      "expected": "reject",
+      "id": "secret-dependent-run",
+      "ok": true,
+      "reasons": [
+        "evaluation depends on undisclosed secrets"
+      ],
+      "tags": [
+        "protocol"
+      ],
+      "triggered_signals": [
+        "secret_free"
+      ]
+    },
+    {
+      "actual": "reject",
+      "expected": "reject",
+      "id": "inconsistent-repo-evidence",
+      "ok": true,
+      "reasons": [
+        "repository evidence is inconsistent with the plan"
+      ],
+      "tags": [
+        "adversarial"
+      ],
+      "triggered_signals": [
+        "repo_plan_consistent"
+      ]
+    }
+  ],
+  "risks": []
+}
