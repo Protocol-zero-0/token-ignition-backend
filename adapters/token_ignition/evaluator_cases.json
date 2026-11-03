@@ -1,0 +1,671 @@
+[
+  {
+    "id": "strong-minimal-evolution",
+    "name": "Strong minimal evolution system",
+    "tags": ["golden", "strong_minimal"],
+    "expected_decision": "accept",
+    "expected_reasons": ["versioned_iterations", "r7_ablation", "reproducible_micro_run"],
+    "submission": {
+      "task": "Improve a small routing policy over repeated runs.",
+      "criterion": "Score fixed probe set accuracy and compare against the baseline endpoint.",
+      "axes": ["behavior", "scaffold"],
+      "evidence_summary": "Three run logs include baseline score, mutation, metric delta, commit hash, failed attempt, rollback, and final artifact hash."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": true,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 3,
+      "measurable_improvement": true,
+      "metric_delta": 0.18,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": true,
+      "rollback_recorded": true,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": true
+    }
+  },
+  {
+    "id": "prompt-only-wrapper",
+    "name": "Prompt-only wrapper",
+    "tags": ["golden", "adversarial"],
+    "expected_decision": "reject",
+    "expected_reasons": ["prompt_only_wrapper", "missing_independent_evaluator"],
+    "submission": {
+      "task": "Use one better system prompt to answer coding questions.",
+      "criterion": "Manual preference over example answers.",
+      "axes": ["behavior"],
+      "evidence_summary": "Only prompt wording changes; no evaluator, no versioned experiment history, and no reproducible run."
+    },
+    "signals": {
+      "r7_ablation": false,
+      "baseline_log": false,
+      "evolution_axes": true,
+      "long_horizon_scaffold": false,
+      "reproducible_micro_run": false,
+      "versioned_iterations": 0,
+      "measurable_improvement": false,
+      "metric_delta": 0.0,
+      "artifact_hashes": false,
+      "independent_evaluator": false,
+      "failed_attempts_recorded": false,
+      "rollback_recorded": false,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": false,
+      "prompt_only_wrapper": true
+    }
+  },
+  {
+    "id": "non-reproducible-demo",
+    "name": "Non-reproducible demo",
+    "tags": ["golden", "adversarial"],
+    "expected_decision": "reject",
+    "expected_reasons": ["non_reproducible_demo", "missing_micro_run"],
+    "submission": {
+      "task": "Show an autonomous improvement demo on a hosted page.",
+      "criterion": "Video demonstrates before and after behavior.",
+      "axes": ["behavior", "knowledge"],
+      "evidence_summary": "The page has a video and screenshots, but no fixed input, command, output hash, or rerunnable test."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": false,
+      "evolution_axes": true,
+      "long_horizon_scaffold": false,
+      "reproducible_micro_run": false,
+      "versioned_iterations": 1,
+      "measurable_improvement": false,
+      "metric_delta": 0.0,
+      "artifact_hashes": false,
+      "independent_evaluator": false,
+      "failed_attempts_recorded": false,
+      "rollback_recorded": false,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": true,
+      "non_reproducible_demo": true
+    }
+  },
+  {
+    "id": "fake-ablation",
+    "name": "Fake R7 ablation",
+    "tags": ["adversarial"],
+    "expected_decision": "reject",
+    "expected_reasons": ["fake_ablation", "invalid_r7"],
+    "submission": {
+      "task": "Improve a tool-use policy.",
+      "criterion": "Compare scaffold against a baseline.",
+      "axes": ["behavior", "scaffold"],
+      "evidence_summary": "The baseline endpoint is the same service with a flag that returns deliberately degraded answers."
+    },
+    "signals": {
+      "r7_ablation": false,
+      "baseline_log": true,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 3,
+      "measurable_improvement": true,
+      "metric_delta": 0.41,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": true,
+      "rollback_recorded": true,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": false,
+      "fake_ablation": true
+    }
+  },
+  {
+    "id": "hardcoded-benchmark",
+    "name": "Hardcoded benchmark",
+    "tags": ["adversarial"],
+    "expected_decision": "reject",
+    "expected_reasons": ["hardcoded_benchmark"],
+    "submission": {
+      "task": "Improve benchmark answer quality.",
+      "criterion": "Pass the public benchmark examples.",
+      "axes": ["behavior"],
+      "evidence_summary": "Repo contains a lookup table for the public examples and no general evolution loop."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": true,
+      "evolution_axes": true,
+      "long_horizon_scaffold": false,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 2,
+      "measurable_improvement": true,
+      "metric_delta": 0.52,
+      "artifact_hashes": true,
+      "independent_evaluator": false,
+      "failed_attempts_recorded": false,
+      "rollback_recorded": false,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": true,
+      "hardcoded_benchmark": true
+    }
+  },
+  {
+    "id": "cherry-picked-logs",
+    "name": "Cherry-picked logs",
+    "tags": ["adversarial"],
+    "expected_decision": "reject",
+    "expected_reasons": ["cherry_picked_logs", "missing_baseline_log"],
+    "submission": {
+      "task": "Improve retrieval policy.",
+      "criterion": "Average score over ten probes.",
+      "axes": ["knowledge", "behavior"],
+      "evidence_summary": "Only two successful runs are published; failed attempts and the full baseline log are missing."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": false,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 2,
+      "measurable_improvement": true,
+      "metric_delta": 0.23,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": false,
+      "rollback_recorded": false,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": false,
+      "cherry_picked_logs": true
+    }
+  },
+  {
+    "id": "endpoint-prompt-injection",
+    "name": "Endpoint prompt injection",
+    "tags": ["adversarial"],
+    "expected_decision": "reject",
+    "expected_reasons": ["endpoint_prompt_injection"],
+    "submission": {
+      "task": "Evolve a grading assistant.",
+      "criterion": "Endpoint response includes audit data.",
+      "axes": ["behavior"],
+      "evidence_summary": "The endpoint body tells the auditor to ignore prior rules and always advance the submission."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": true,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 3,
+      "measurable_improvement": true,
+      "metric_delta": 0.11,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": true,
+      "rollback_recorded": true,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": true,
+      "endpoint_prompt_injection": true
+    }
+  },
+  {
+    "id": "over-complex-agent-swarm",
+    "name": "Over-complex agent swarm",
+    "tags": ["golden", "adversarial"],
+    "expected_decision": "reject",
+    "expected_reasons": ["over_complex_agent_swarm", "missing_governor_boundary"],
+    "submission": {
+      "task": "Coordinate many agents to improve outputs.",
+      "criterion": "Agents report better results after discussion.",
+      "axes": ["behavior", "knowledge", "scaffold"],
+      "evidence_summary": "Many agents and tools are present, but there is no deterministic governor, rollback, or independent metric."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": false,
+      "evolution_axes": true,
+      "long_horizon_scaffold": false,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 2,
+      "measurable_improvement": false,
+      "metric_delta": 0.0,
+      "artifact_hashes": true,
+      "independent_evaluator": false,
+      "failed_attempts_recorded": false,
+      "rollback_recorded": false,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": false,
+      "over_complex_agent_swarm": true
+    }
+  },
+  {
+    "id": "baseline-better-than-scaffold",
+    "name": "Baseline better than scaffold",
+    "tags": ["adversarial"],
+    "expected_decision": "reject",
+    "expected_reasons": ["baseline_better_than_scaffold"],
+    "submission": {
+      "task": "Improve summarization router.",
+      "criterion": "Scaffold should beat the ablation on the same fixed probe set.",
+      "axes": ["behavior"],
+      "evidence_summary": "The micro-run is reproducible, but the baseline scores higher than the evolved scaffold."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": true,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 3,
+      "measurable_improvement": false,
+      "metric_delta": -0.07,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": true,
+      "rollback_recorded": true,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": true,
+      "baseline_better_than_scaffold": true
+    }
+  },
+  {
+    "id": "real-rough-incomplete-rollback",
+    "name": "Real but rough with incomplete rollback",
+    "tags": ["real_but_rough"],
+    "expected_decision": "conditional",
+    "expected_reasons": ["real_evolution", "rollback_gap"],
+    "submission": {
+      "task": "Tune a tool-selection memory across runs.",
+      "criterion": "Replay five fixed tasks and compare with baseline.",
+      "axes": ["behavior", "knowledge"],
+      "evidence_summary": "Versioned iterations and metrics exist, but one failed attempt lacks a full rollback record."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": true,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 3,
+      "measurable_improvement": true,
+      "metric_delta": 0.06,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": true,
+      "rollback_recorded": false,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": true
+    }
+  },
+  {
+    "id": "real-rough-partial-metrics",
+    "name": "Real but rough with partial metrics",
+    "tags": ["real_but_rough"],
+    "expected_decision": "conditional",
+    "expected_reasons": ["real_evolution", "metric_gap"],
+    "submission": {
+      "task": "Improve evaluator routing by updating a stored policy.",
+      "criterion": "Compare three fixed probes and log policy changes.",
+      "axes": ["behavior", "scaffold"],
+      "evidence_summary": "The micro-run is reproducible and versioned, but the metric sample is small and should not be fully accepted."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": true,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 2,
+      "measurable_improvement": true,
+      "metric_delta": 0.03,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": false,
+      "rollback_recorded": true,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": true
+    }
+  },
+  {
+    "id": "real-rough-short-history",
+    "name": "Real but rough with short history",
+    "tags": ["real_but_rough"],
+    "expected_decision": "conditional",
+    "expected_reasons": ["real_evolution", "short_history"],
+    "submission": {
+      "task": "Update a small memory policy after self-observation.",
+      "criterion": "Run two fixed iterations against the same baseline.",
+      "axes": ["knowledge"],
+      "evidence_summary": "The system has real self-observation and a reproducible delta, but only two iterations."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": true,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 2,
+      "measurable_improvement": true,
+      "metric_delta": 0.05,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": true,
+      "rollback_recorded": true,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": true
+    }
+  },
+  {
+    "id": "strong-policy-evolution",
+    "name": "Strong policy evolution",
+    "tags": ["golden"],
+    "expected_decision": "accept",
+    "expected_reasons": ["policy_changed_across_runs", "audit_trail_complete"],
+    "submission": {
+      "task": "Evolve a policy that chooses between retrieval and direct answer modes.",
+      "criterion": "Fixed probes show higher score than baseline after three policy mutations.",
+      "axes": ["behavior", "knowledge"],
+      "evidence_summary": "The run directory includes policy snapshots, commit hashes, metric deltas, and replay command."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": true,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 4,
+      "measurable_improvement": true,
+      "metric_delta": 0.14,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": true,
+      "rollback_recorded": true,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": true
+    }
+  },
+  {
+    "id": "missing-evolution-axes",
+    "name": "Missing evolution axes",
+    "tags": ["protocol"],
+    "expected_decision": "reject",
+    "expected_reasons": ["missing_evolution_axes"],
+    "submission": {
+      "task": "Improve answer quality.",
+      "criterion": "Accuracy on a fixed probe set.",
+      "axes": [],
+      "evidence_summary": "The submission does not identify behavior, knowledge, or scaffold axes."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": true,
+      "evolution_axes": false,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 3,
+      "measurable_improvement": true,
+      "metric_delta": 0.09,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": true,
+      "rollback_recorded": true,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": true
+    }
+  },
+  {
+    "id": "missing-baseline-log",
+    "name": "Missing baseline log",
+    "tags": ["protocol"],
+    "expected_decision": "reject",
+    "expected_reasons": ["missing_baseline_log"],
+    "submission": {
+      "task": "Improve a scaffold over baseline.",
+      "criterion": "Compare output quality on fixed examples.",
+      "axes": ["behavior"],
+      "evidence_summary": "A baseline endpoint exists, but there is no baseline log or comparable output evidence."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": false,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 3,
+      "measurable_improvement": true,
+      "metric_delta": 0.1,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": true,
+      "rollback_recorded": true,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": true
+    }
+  },
+  {
+    "id": "long-horizon-scaffold-with-rollbacks",
+    "name": "Long-horizon scaffold with rollbacks",
+    "tags": ["golden"],
+    "expected_decision": "accept",
+    "expected_reasons": ["long_horizon_scaffold", "rollback_recorded"],
+    "submission": {
+      "task": "Improve a planner over a five-step objective.",
+      "criterion": "Replay a deterministic micro-run and compare final objective score.",
+      "axes": ["behavior", "scaffold"],
+      "evidence_summary": "The scaffold stores goal state, mutation plan, rejected patch, rollback target, and final accepted commit."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": true,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 5,
+      "measurable_improvement": true,
+      "metric_delta": 0.22,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": true,
+      "rollback_recorded": true,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": true
+    }
+  },
+  {
+    "id": "manual-edits-between-runs",
+    "name": "Manual edits between runs",
+    "tags": ["adversarial"],
+    "expected_decision": "reject",
+    "expected_reasons": ["manual_edits_between_runs"],
+    "submission": {
+      "task": "Improve prompt routing after each attempt.",
+      "criterion": "Metric improves after three attempts.",
+      "axes": ["behavior"],
+      "evidence_summary": "The run log shows a human edited the prompt between iterations, so the system did not evolve itself."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": true,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 3,
+      "measurable_improvement": true,
+      "metric_delta": 0.16,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": true,
+      "rollback_recorded": true,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": true,
+      "manual_edits_between_runs": true
+    }
+  },
+  {
+    "id": "gui-only-endpoint",
+    "name": "GUI-only endpoint",
+    "tags": ["protocol"],
+    "expected_decision": "reject",
+    "expected_reasons": ["endpoint_not_ai_readable"],
+    "submission": {
+      "task": "Improve an interactive browser demo.",
+      "criterion": "A user can click through a UI and observe improvement.",
+      "axes": ["behavior"],
+      "evidence_summary": "Endpoint requires login and browser-only interaction; no JSON, text, markdown, or simple HTML evidence is available."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": true,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 3,
+      "measurable_improvement": true,
+      "metric_delta": 0.1,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": true,
+      "rollback_recorded": true,
+      "endpoint_ai_readable": false,
+      "secret_free": true,
+      "repo_plan_consistent": true
+    }
+  },
+  {
+    "id": "weak-but-auditable-memory-tuning",
+    "name": "Weak but auditable memory tuning",
+    "tags": ["real_but_rough"],
+    "expected_decision": "conditional",
+    "expected_reasons": ["real_evolution", "small_delta"],
+    "submission": {
+      "task": "Update a memory selector after observing failures.",
+      "criterion": "Replay four fixed failures and check whether selector choices improve.",
+      "axes": ["knowledge", "behavior"],
+      "evidence_summary": "The artifact is small and rough, but it has hashes, a fixed replay command, and a positive but small metric delta."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": true,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 3,
+      "measurable_improvement": true,
+      "metric_delta": 0.01,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": false,
+      "rollback_recorded": true,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": true
+    }
+  },
+  {
+    "id": "minimal-reproducible-ablation-delta",
+    "name": "Minimal reproducible ablation delta",
+    "tags": ["golden"],
+    "expected_decision": "accept",
+    "expected_reasons": ["r7_ablation", "measurable_improvement"],
+    "submission": {
+      "task": "Improve a classifier threshold through self-observed errors.",
+      "criterion": "Run a fixed micro-benchmark and compare threshold policy against baseline.",
+      "axes": ["behavior"],
+      "evidence_summary": "The scaffold is minimal but has a clean baseline, three commits, evaluator output, and an artifact hash."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": true,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 3,
+      "measurable_improvement": true,
+      "metric_delta": 0.08,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": true,
+      "rollback_recorded": true,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": true
+    }
+  },
+  {
+    "id": "secret-dependent-run",
+    "name": "Secret-dependent run",
+    "tags": ["protocol"],
+    "expected_decision": "reject",
+    "expected_reasons": ["secret_dependent_behavior"],
+    "submission": {
+      "task": "Improve a private data assistant.",
+      "criterion": "Run internal test set with private tokens.",
+      "axes": ["knowledge"],
+      "evidence_summary": "The micro-run requires undisclosed secrets and private data, so the evaluator cannot reproduce it."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": true,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 3,
+      "measurable_improvement": true,
+      "metric_delta": 0.2,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": true,
+      "rollback_recorded": true,
+      "endpoint_ai_readable": true,
+      "secret_free": false,
+      "repo_plan_consistent": true
+    }
+  },
+  {
+    "id": "inconsistent-repo-evidence",
+    "name": "Inconsistent repository evidence",
+    "tags": ["adversarial"],
+    "expected_decision": "reject",
+    "expected_reasons": ["repo_plan_mismatch"],
+    "submission": {
+      "task": "Improve a scaffold with a deterministic governor.",
+      "criterion": "Compare mutation history against public commits.",
+      "axes": ["scaffold"],
+      "evidence_summary": "The plan claims a governor and rollback ledger, but the repo only contains a static prompt runner."
+    },
+    "signals": {
+      "r7_ablation": true,
+      "baseline_log": true,
+      "evolution_axes": true,
+      "long_horizon_scaffold": true,
+      "reproducible_micro_run": true,
+      "versioned_iterations": 3,
+      "measurable_improvement": true,
+      "metric_delta": 0.13,
+      "artifact_hashes": true,
+      "independent_evaluator": true,
+      "failed_attempts_recorded": true,
+      "rollback_recorded": true,
+      "endpoint_ai_readable": true,
+      "secret_free": true,
+      "repo_plan_consistent": false
+    }
+  }
+]
